@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>DPSI - KNOW ABOUT INDIA</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <div id="glitch-overlay"></div>
+  <div id="corner-tl" class="corner-hud"></div>
+  <div id="corner-tr" class="corner-hud"></div>
+  <div id="corner-bl" class="corner-hud"></div>
+  <div id="corner-br" class="corner-hud"></div>
+
+  <audio id="snd-start"   src="sounds/start-click.mp3" preload="auto"></audio>
+  <audio id="snd-zoom"    src="sounds/zoom.mp3"        preload="auto"></audio>
+  <audio id="snd-back"    src="sounds/back.mp3"        preload="auto"></audio>
+  <audio id="snd-ambient" src="sounds/ambient.mp3" loop preload="auto"></audio>
+
+  <!-- ═══════════════ SCREEN: SAVER ═══════════════ -->
+  <div id="screen-saver" class="screen active">
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- Indian Flag replaces chakra — image is assets/chakra.webp -->
+    <div class="flag-container">
+      <div class="flag-glow-ring outer-ring"></div>
+      <div class="flag-glow-ring mid-ring"></div>
+      <img id="chakra-img" src="assets/chakra.webp" alt="Indian Flag"
+           onerror="this.style.display='none';document.querySelector('.flag-fallback').style.display='flex'" />
+      <div class="flag-fallback">🇮🇳</div>
+      <div class="flag-glow-pulse"></div>
+    </div>
+
+    <div class="logo-card">
+      <img src="assets/dpsi-logo.webp" alt="DPSI Logo" id="dpsi-logo"
+           onerror="this.outerHTML='<div style=\'font-family:Orbitron,sans-serif;font-size:2rem;font-weight:900;color:#FF9933\'>DPSI</div>'" />
+      <div class="logo-tagline"><B>DELHI PUBLIC SCHOOL INDIRAPURAM</B></div>
+    </div>
+
+    <div class="touch-prompt">
+      <div class="touch-ripple-outer"></div>
+      <div class="touch-ripple-inner"></div>
+      
+      
+      <div class="touch-text">
+        <span class="touch-line-1"></span>
+        <span class="touch-line-1">TOUCH TO EXPLORE</span>
+        <div class="touch-finger">👆</div>
+        <span class="touch-line-2">INCREDIBLE INDIA</span>
+      </div>
+    </div>
+
+    <div class="saver-hud-top">
+      <span>DPSI INDIA KIOSK</span>
+      <span>by AI Lab</span>
+    </div>
+    <div class="saver-hud-bottom">
+      <span id="hud-clock">00:00:00</span>
+      <span class="hud-status">●  SYSTEM READY</span>
+    </div>
+  </div>
+
+  <!-- ═══════════════ SCREEN: APP ═══════════════ -->
+  <div id="screen-app" class="screen">
+
+    <header class="hud-top-bar">
+      <div class="htb-left">
+        <img src="assets/dpsi-logo.webp" alt="DPSI" class="htb-logo"
+             onerror="this.outerHTML='<span class=\'htb-logo-text\'>DPSI</span>'" />
+        <div class="htb-brand">
+          <div class="htb-name">EXPLORE INDIA</div>
+          <div class="htb-sub">by DPSI</div>
+        </div>
+      </div>
+
+      <div class="htb-centre">◈ INTERACTIVE STATE MAP ◈ INDIA ◈</div>
+
+      <div class="htb-right">
+        <span id="hud-clock-app" class="htb-clock">00:00:00</span>
+        <button id="btn-back" class="htb-home-btn">⏎ HOME</button>
+      </div>
+    </header>
+
+    <!-- ACTION BAR -->
+    <div class="hud-action-bar">
+      <div class="search-wrap" id="search-wrap">
+        <div class="search-box">
+          <span class="search-icon">⌕</span>
+          <input type="text" id="search-input" placeholder="Search state…" autocomplete="off" />
+          <button id="search-clear" class="search-clear">✕</button>
+        </div>
+        <div id="search-dropdown" class="search-dropdown hidden"></div>
+      </div>
+
+      <button id="btn-incredible" class="incredible-btn">
+        <span>🇮🇳</span>
+        <span>Incredible India</span>
+        <span>›</span>
+      </button>
+
+      <div class="quick-stats-horizontal">
+        <div class="qs-item">
+          <span class="qs-label">States</span>
+          <span class="qs-val">28 + 8 UTs</span>
+        </div>
+        <div class="qs-item">
+          <span class="qs-label">Population</span>
+          <span class="qs-val">1.44B</span>
+        </div>
+        <div class="qs-item">
+          <span class="qs-label">Languages</span>
+          <span class="qs-val">22+</span>
+        </div>
+        <div class="qs-item">
+          <span class="qs-label">Area</span>
+          <span class="qs-val">3.29M km²</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAP -->
+    <div id="map-container">
+
+      <!-- Advanced loading screen -->
+      <div id="map-loading" class="map-loading">
+        <div class="map-loading-scan"></div>
+        <div class="map-loading-corner mlc-tl"></div>
+        <div class="map-loading-corner mlc-tr"></div>
+        <div class="map-loading-corner mlc-bl"></div>
+        <div class="map-loading-corner mlc-br"></div>
+
+        <div class="map-loading-india">
+          <svg viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg">
+            <path class="india-silhouette" d="
+              M50 4 C44 4 38 8 34 14
+              L28 28 L22 45 L18 60 L16 73
+              L12 88 L10 100 L14 114
+              L20 124 L28 130 L36 134
+              L42 136 L50 138
+              L58 136 L64 134 L72 130
+              L80 124 L86 114 L90 100
+              L88 88 L84 73 L82 60
+              L78 45 L72 28 L66 14
+              C62 8 56 4 50 4Z
+            "/>
+          </svg>
+          <div class="india-pulse-dot"></div>
+        </div>
+
+        <div class="map-loading-hex-grid">
+          <div class="hex-cell"></div>
+          <div class="hex-cell"></div>
+          <div class="hex-cell"></div>
+          <div class="hex-cell"></div>
+          <div class="hex-cell"></div>
+          <div class="hex-cell"></div>
+          <div class="hex-cell"></div>
+        </div>
+
+        <div class="map-loading-progress-wrap">
+          <div class="map-loading-bar-track">
+            <div class="map-loading-bar-fill"></div>
+            <div class="map-loading-bar-shimmer"></div>
+          </div>
+          <div class="map-loading-text" id="map-loading-text">INITIALISING MAP…</div>
+          <div class="map-loading-subtext">Loading geospatial data</div>
+        </div>
+      </div>
+
+      <div id="map"></div>
+
+      <!-- Watermark cover overlays -->
+      <div id="map-watermark-overlay"></div>
+      <div id="map-watermark-overlay-tr"></div>
+      <div id="map-watermark-overlay-bl"></div>
+
+    </div><!-- /#map-container -->
+
+    <div class="hud-bottom-bar">
+      <span id="selected-state-label">◈ TAP ANY STATE TO EXPLORE</span>
+      <span class="hud-compass">NORTH ◈</span>
+    </div>
+
+  </div><!-- /#screen-app -->
+
+  <!-- ═══════════════ MODAL: STATE ═══════════════ -->
+  <div id="modal-state" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-glass">
+
+      <button id="modal-close" class="modal-close-btn">✕ CLOSE</button>
+
+      <div class="modal-header">
+        <div class="modal-state-code" id="modal-state-code">MH</div>
+        <div class="modal-state-info">
+          <div class="modal-state-name"    id="modal-state-name">Maharashtra</div>
+          <div class="modal-state-capital" id="modal-state-capital">Capital: Mumbai</div>
+        </div>
+        <div class="modal-state-emblem" id="modal-state-emblem"></div>
+      </div>
+
+      <div class="modal-body">
+        <div class="modal-video-col">
+          <div class="video-frame">
+            <video id="state-video" autoplay loop playsinline>
+              <source id="state-video-src" src="" type="video/mp4" />
+            </video>
+            <div class="video-no-content hidden" id="video-placeholder">
+              <div class="vnc-icon">▶</div>
+              <div class="vnc-text">Visual Tour<br/>Coming Soon</div>
+            </div>
+            <!-- NO scanlines overlay here — removed -->
+            <button id="mute-toggle" class="mute-btn" title="Toggle mute">🔇</button>
+          </div>
+        </div>
+
+        <div class="modal-info-col">
+          <div class="info-grid" id="modal-info-grid"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ OVERLAY: INCREDIBLE INDIA ═══════════════ -->
+  <div id="overlay-incredible" class="modal-overlay hidden" role="dialog">
+    <div class="incredible-glass">
+      <button class="modal-close-btn" onclick="closeIncredible()">✕ CLOSE</button>
+      <div class="incredible-header">
+        <div class="ii-title">INCREDIBLE INDIA</div>
+        <div class="ii-subtitle">◈ TOP FACTS ◈</div>
+      </div>
+      <div class="facts-grid" id="facts-grid"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ INACTIVITY TOAST ═══════════════ -->
+  <div id="inactivity-toast" class="inactivity-toast hidden">
+    <span>⚠</span>
+    <span>Returning to home in <strong id="countdown-val">10</strong>s…</span>
+    <button id="stay-btn">STAY</button>
+  </div>
+
+  <script src="mapdata.js"></script>
+  <script src="countrymap.js"></script>
+  <script src="script.js"></script>
+
+</body>
+</html>
